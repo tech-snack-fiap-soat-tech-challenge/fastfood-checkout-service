@@ -1,0 +1,86 @@
+name: Deploy Backend to AWS EKS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código-fonte
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Compilar TypeScript
+        run: npm run build
+
+      - name: Arquivar artefatos de build
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout código-fonte
+        uses: actions/checkout@v4
+
+      - name: Baixar artefatos de build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+      - name: Configurar AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Fazer login no Amazon ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_REPOSITORY }}
+
+      - name: Construir e enviar imagem Docker para o ECR
+        run: |
+          docker build -t ${{ secrets.AWS_ECR_REPOSITORY }}:latest .
+          docker push ${{ secrets.AWS_ECR_REPOSITORY }}:latest
+
+      - name: Configurar kubectl e acessar cluster EKS
+        run: |
+          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region us-east-1
+
+      - name: Instalar Helm
+        uses: azure/setup-helm@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fazer deploy com Helm
+        run: |
+          helm upgrade --install fiap-fastfood ./deployment/fiap-fast-food \
+            --namespace default \
+            --set image.repository=${{ secrets.AWS_ECR_REPOSITORY }} \
+            --set image.tag=latest
+
+      - name: Verificar status dos pods
+        run: kubectl get pods -o wide

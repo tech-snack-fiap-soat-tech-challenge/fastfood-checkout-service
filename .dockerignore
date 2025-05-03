@@ -1,0 +1,52 @@
+# Ignore environment variable files
+**/*.env
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore folder
+infra/
+deployment/
+performance/
+db/
+
+# Ignore documentation files
+docs/
+
+# Ignore test coverage files
+coverage/
+
+# Ignore build output
+dist/
+build/
+
+# Ignore temporary files
+tmp/
+temp/
+
+# Ignore editor directories and files
+.vscode/
+
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore npm and yarn lock files (optional, if you don't want to include them in the image)
+# package-lock.json
+# yarn.lock
+
+# Ignore Docker-related files
+.dockerignore
+Dockerfile
+
+# Ignore Git-related files
+.git/
+.gitignore
