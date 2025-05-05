@@ -22,6 +22,9 @@ services:
       - "9325:9325"
     networks:
       - app-network
+    volumes:
+      - ./docker/elasticmq.conf:/opt/elasticmq.conf
+    command: -Dconfig.file=/opt/elasticmq.conf
 
   # This is for local development only, for the final delivery remove this service
   # pgadmin:
@@ -39,23 +42,23 @@ services:
   #   networks:
   #     - app-network
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: checkout-service
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: fastfood
-    ports:
-      - "3000:3000"
-    depends_on:
-      - postgres
-    networks:
-      - app-network
+  # checkout-service:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: checkout-service
+  #   environment:
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_USER: postgres
+  #     DB_PASSWORD: postgres
+  #     DB_NAME: fastfood
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - app-network
 
 volumes:
   postgres_data:

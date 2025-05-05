@@ -14,6 +14,11 @@ export interface AppConfig {
     database: string;
     useSSL: boolean;
   };
+  sqs: {
+    region: string;
+    endpoint: string;
+    orderCreatedQueueUrl: string;
+  };
 }
 
 export const configuration = (): AppConfig => ({
@@ -29,6 +34,17 @@ export const configuration = (): AppConfig => ({
     password: process.env.DB_PASSWORD || 'postgres',
     database: process.env.DB_NAME || 'fastfood',
     useSSL: process.env.DB_SSL === 'true',
+  },
+  sqs: {
+    region: process.env.AWS_REGION || 'us-east-1',
+    endpoint:
+      process.env.SQS_ENDPOINT ||
+      (process.env.NODE_ENV === 'development'
+        ? 'http://localhost:9324'
+        : 'https://sqs.us-east-1.amazonaws.com'),
+    orderCreatedQueueUrl:
+      process.env.AWS_ORDER_CREATED_QUEUE_URL ||
+      'http://localhost:9324/000000000000/order-created.fifo',
   },
 });
 
