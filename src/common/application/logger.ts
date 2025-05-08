@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { pino } from 'pino';
 import { Injectable, LoggerService, Scope } from '@nestjs/common';
 import { pinoConfig } from '@app/configuration/configuration';

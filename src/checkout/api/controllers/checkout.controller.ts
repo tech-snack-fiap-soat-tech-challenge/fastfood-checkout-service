@@ -1,15 +1,15 @@
 import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { GetCheckoutsQuery } from '../../core/application/use-cases/get-checkouts/get-checkouts.query';
-import { GetCheckoutsOutput } from '../../core/application/use-cases/get-checkouts/get-checkouts.output';
-import { CheckoutOutput } from '../../core/application/dtos/checkout.output';
-import { UpdateCheckoutStatusCommand } from '../../core/application/use-cases/update-checkout-status/update-checkout-status.command';
-import { UpdateCheckoutStatusOutput } from '../../core/application/use-cases/update-checkout-status/update-checkout-status.output';
-import { GetCheckoutByOrderIdQuery } from '../../core/application/use-cases/get-checkout-by-order-id/get-checkout-by-order-id.query';
-import { GetCheckoutByOrderIdOutput } from '../../core/application/use-cases/get-checkout-by-order-id/get-checkout-by-order-id.output';
-import { UpdateCheckoutStatusRequest } from '../dtos/update-checkout-status-.request';
+import { UpdateCheckoutStatusRequest } from '@checkout/api/dtos/update-checkout-status-.request';
+import { CheckoutOutput } from '@checkout/core/application/dtos/checkout.output';
+import { GetCheckoutByOrderIdOutput } from '@checkout/core/application/use-cases/get-checkout-by-order-id/get-checkout-by-order-id.output';
+import { GetCheckoutByOrderIdQuery } from '@checkout/core/application/use-cases/get-checkout-by-order-id/get-checkout-by-order-id.query';
+import { GetCheckoutsOutput } from '@checkout/core/application/use-cases/get-checkouts/get-checkouts.output';
+import { GetCheckoutsQuery } from '@checkout/core/application/use-cases/get-checkouts/get-checkouts.query';
+import { UpdateCheckoutStatusCommand } from '@checkout/core/application/use-cases/update-checkout-status/update-checkout-status.command';
+import { UpdateCheckoutStatusOutput } from '@checkout/core/application/use-cases/update-checkout-status/update-checkout-status.output';
 
 @ApiTags('checkouts')
 @Controller('checkout')

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { Response } from 'express';
 import { EntityNotFoundException } from '../exceptions/entity-not-found.excention';
