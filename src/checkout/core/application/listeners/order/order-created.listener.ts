@@ -23,7 +23,7 @@ export class OrderCreatedListener implements OnModuleInit {
     void this.listenForMessages();
   }
 
-  private listenForMessages() {
+  public listenForMessages() {
     setInterval(async () => {
       try {
         const response = await this.sqsClient.receiveMessages(this.queueUrl);

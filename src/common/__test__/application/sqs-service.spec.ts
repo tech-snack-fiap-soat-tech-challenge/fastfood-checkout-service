@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { SqsService } from '@app/common/application/sqs-service';
 import { SQSClient } from '@aws-sdk/client-sqs';
 import { ConfigService } from '@nestjs/config';
@@ -6,9 +7,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 jest.mock('@aws-sdk/client-sqs', () => {
   return {
     SQSClient: jest.fn(),
-    SendMessageCommand: jest.fn(),
-    ReceiveMessageCommand: jest.fn(),
-    DeleteMessageCommand: jest.fn(),
+    SendMessageCommand: jest.fn().mockImplementation((input) => ({ input })),
+    ReceiveMessageCommand: jest.fn().mockImplementation((input) => ({ input })),
+    DeleteMessageCommand: jest.fn().mockImplementation((input) => ({ input })),
   };
 });
 

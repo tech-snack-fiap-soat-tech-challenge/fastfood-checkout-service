@@ -92,7 +92,8 @@
     "coveragePathIgnorePatterns": [
       "main.ts",
       "configuration.ts",
-      ".*\\.module\\.ts"
+      ".*\\.module\\.ts",
+      ".*\\.entity\\.ts"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
