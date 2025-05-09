@@ -88,7 +88,6 @@ describe('CheckoutRepository', () => {
           // Assert
           expect(typeOrmRepository.findOne).toHaveBeenCalledWith({
             where: { id: mockId },
-            relations: ['order'],
           });
           expect(result).toEqual(mockCheckout);
         });
@@ -108,7 +107,6 @@ describe('CheckoutRepository', () => {
           // Assert
           expect(typeOrmRepository.findOne).toHaveBeenCalledWith({
             where: { id: mockId },
-            relations: ['order'],
           });
           expect(result).toBeNull();
         });
@@ -184,7 +182,6 @@ describe('CheckoutRepository', () => {
           );
           expect(typeOrmRepository.findOne).toHaveBeenCalledWith({
             where: { id: mockId },
-            relations: ['order'],
           });
           expect(result).toEqual(updatedCheckout);
           expect(result.status).toBe('paid');
@@ -218,7 +215,6 @@ describe('CheckoutRepository', () => {
           // Assert
           expect(typeOrmRepository.findOne).toHaveBeenCalledWith({
             where: { orderId: mockOrderId },
-            relations: ['order'],
           });
           expect(result).toEqual(mockCheckout);
           expect(result.orderId).toBe(mockOrderId);
@@ -239,7 +235,6 @@ describe('CheckoutRepository', () => {
           // Assert
           expect(typeOrmRepository.findOne).toHaveBeenCalledWith({
             where: { orderId: mockOrderId },
-            relations: ['order'],
           });
           expect(result).toBeNull();
         });

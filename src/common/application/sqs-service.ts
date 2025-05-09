@@ -18,9 +18,10 @@ export class SqsService {
     });
   }
 
-  async sendMessage(queueUrl: string, messageBody: string) {
+  async sendMessage(queueUrl: string, groupId: string, messageBody: string) {
     const command = new SendMessageCommand({
       QueueUrl: queueUrl,
+      MessageGroupId: groupId,
       MessageBody: messageBody,
     });
     return this.sqsClient.send(command);

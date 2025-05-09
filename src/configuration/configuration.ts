@@ -18,6 +18,7 @@ export interface AppConfig {
     region: string;
     endpoint: string;
     orderCreatedQueueUrl: string;
+    paymentCompletedQueueUrl: string;
   };
 }
 
@@ -45,6 +46,9 @@ export const configuration = (): AppConfig => ({
     orderCreatedQueueUrl:
       process.env.AWS_ORDER_CREATED_QUEUE_URL ||
       'http://localhost:9324/000000000000/order-created.fifo',
+    paymentCompletedQueueUrl:
+      process.env.AWS_PAYMENT_COMPLETED_QUEUE_URL ||
+      'http://localhost:9324/000000000000/payment-completed.fifo',
   },
 });
 

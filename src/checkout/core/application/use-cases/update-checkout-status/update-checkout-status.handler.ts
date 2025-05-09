@@ -1,4 +1,4 @@
-import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { ICheckoutRepository } from '@app/checkout/core/domain/interfaces/repositories/checkout.repository.interface';
 import { UpdateCheckoutStatusCommand } from './update-checkout-status.command';
@@ -7,19 +7,28 @@ import { UpdateFailedException } from '@app/common/exceptions/entity-update-fail
 import { CheckoutUpdatedEvent } from '@common/domain/events/checkoutUpdatedEvent';
 import { IPaymentGateway } from '@checkout/core/domain/interfaces/gateways/payment-gateway.interface';
 import { Status } from '@checkout/core/application/enums/status.enum';
+import { SqsService } from '@app/common/application/sqs-service';
+import { ConfigService } from '@nestjs/config';
 
 @CommandHandler(UpdateCheckoutStatusCommand)
 export class UpdateCheckoutStatusHandler
   implements
     ICommandHandler<UpdateCheckoutStatusCommand, UpdateCheckoutStatusOutput>
 {
+  private readonly queueUrl: string;
+
   constructor(
     @Inject(ICheckoutRepository)
     private readonly checkoutRepository: ICheckoutRepository,
     @Inject(IPaymentGateway)
     private readonly paymentGateway: IPaymentGateway,
-    private readonly eventBus: EventBus,
-  ) {}
+    private readonly sqsService: SqsService,
+    private readonly configService: ConfigService,
+  ) {
+    this.queueUrl = this.configService.get<string>(
+      'sqs.paymentCompletedQueueUrl',
+    );
+  }
 
   async execute(
     command: UpdateCheckoutStatusCommand,
@@ -55,8 +64,15 @@ export class UpdateCheckoutStatusHandler
       throw new UpdateFailedException('Checkout', checkout.id);
     }
 
-    this.eventBus.publish(
-      new CheckoutUpdatedEvent(checkout.orderId, checkout.status as Status),
+    const checkoutEvent = new CheckoutUpdatedEvent(
+      checkout.orderId,
+      checkout.status as Status,
+    );
+
+    await this.sqsService.sendMessage(
+      this.queueUrl,
+      `checkout-${checkoutEvent.orderId}`,
+      JSON.stringify(checkoutEvent),
     );
 
     return new UpdateCheckoutStatusOutput(updatedCheckout);

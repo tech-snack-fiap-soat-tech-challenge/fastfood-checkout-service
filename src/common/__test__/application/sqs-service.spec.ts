@@ -15,7 +15,6 @@ jest.mock('@aws-sdk/client-sqs', () => {
 
 describe('SqsService', () => {
   let service: SqsService;
-  let configService: jest.Mocked<ConfigService>;
   let sqsClient: jest.Mocked<SQSClient>;
 
   beforeEach(async () => {
@@ -47,7 +46,6 @@ describe('SqsService', () => {
     }).compile();
 
     service = module.get<SqsService>(SqsService);
-    configService = module.get(ConfigService);
     sqsClient = service['sqsClient'] as jest.Mocked<SQSClient>;
   });
 
@@ -56,16 +54,17 @@ describe('SqsService', () => {
   });
 
   describe('sendMessage', () => {
-    describe('Given valid queue URL and message body', () => {
+    describe('Given valid queue URL, group ID and message body', () => {
       describe('When sendMessage is called', () => {
         it('Should send a message to the specified SQS queue', async () => {
           // Arrange
           const queueUrl =
             'https://sqs.us-east-1.amazonaws.com/123456789012/my-queue';
+          const groupId = 'checkout-123';
           const messageBody = '{"orderId": 123, "status": "completed"}';
 
           // Act
-          await service.sendMessage(queueUrl, messageBody);
+          await service.sendMessage(queueUrl, groupId, messageBody);
 
           // Assert
           expect(sqsClient.send).toHaveBeenCalledTimes(1);
@@ -73,6 +72,7 @@ describe('SqsService', () => {
             expect.objectContaining({
               input: {
                 QueueUrl: queueUrl,
+                MessageGroupId: groupId,
                 MessageBody: messageBody,
               },
             }),
@@ -87,13 +87,14 @@ describe('SqsService', () => {
           // Arrange
           const queueUrl =
             'https://sqs.us-east-1.amazonaws.com/123456789012/my-queue';
+          const groupId = 'checkout-123';
           const messageBody = '{"orderId": 123, "status": "completed"}';
           const error = new Error('SQS error');
           (sqsClient.send as jest.Mock).mockRejectedValueOnce(error);
 
           // Act & Assert
           await expect(
-            service.sendMessage(queueUrl, messageBody),
+            service.sendMessage(queueUrl, groupId, messageBody),
           ).rejects.toThrow('SQS error');
           expect(sqsClient.send).toHaveBeenCalledTimes(1);
         });
