@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout código-fonte
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
@@ -24,6 +26,78 @@ jobs:
 
       - name: Instalar dependências
         run: npm install
+
+      - name: Executar testes e gerar cobertura
+        run: npm run test:cov
+
+      - name: Enviar cobertura ao SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          SCANNER_META_PATH="$(pwd)/.scanner-meta.properties"
+          npx sonar-scanner \
+            -Dsonar.projectKey=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service \
+            -Dsonar.organization=tech-snack-fiap-soat-tech-challenge \
+            -Dsonar.sources=src \
+            -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts \
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.token=$SONAR_TOKEN \
+            -Dsonar.scanner.metadataFilePath=$SCANNER_META_PATH
+
+      - name: Validar Quality Gate do SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          echo "Aguardando análise do SonarCloud finalizar..."
+
+          PROJECT_KEY="tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service"
+          META_PATH="$(pwd)/.scanner-meta.properties"
+
+          TASK_ID=$(grep ceTaskId "$META_PATH" | cut -d'=' -f2)
+
+          if [ -z "$TASK_ID" ]; then
+            echo "❌ Não foi possível encontrar ceTaskId. A análise pode ter falhado."
+            exit 1
+          fi
+
+          STATUS="PENDING"
+          while [ "$STATUS" != "SUCCESS" ] && [ "$STATUS" != "FAILED" ]; do
+            echo "⏳ Status da análise: $STATUS"
+            sleep 5
+            STATUS=$(curl -s -u $SONAR_TOKEN: "$SONAR_HOST_URL/api/ce/task?id=$TASK_ID" | jq -r '.task.status')
+          done
+
+          if [ "$STATUS" != "SUCCESS" ]; then
+            echo "❌ A análise falhou no SonarCloud (status: $STATUS)"
+            exit 1
+          fi
+
+          ANALYSIS_ID=""
+          while [ -z "$ANALYSIS_ID" ] || [ "$ANALYSIS_ID" == "null" ]; do
+            echo "⏳ Aguardando analysisId da task..."
+            sleep 3
+            ANALYSIS_ID=$(curl -s -u $SONAR_TOKEN: "$SONAR_HOST_URL/api/ce/task?id=$TASK_ID" | jq -r '.task.analysisId')
+          done
+
+          echo "🔍 Validando Quality Gate para análise $ANALYSIS_ID..."
+
+          QUALITY_GATE_STATUS=$(curl -s -u $SONAR_TOKEN: \
+            "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$ANALYSIS_ID" \
+            | jq -r '.projectStatus.status')
+
+          if [ "$QUALITY_GATE_STATUS" != "OK" ]; then
+            echo -e "\n❌ Quality Gate falhou! Detalhes:"
+            curl -s -u $SONAR_TOKEN: \
+              "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$ANALYSIS_ID" \
+              | jq -r '.projectStatus.conditions[] | select(.status != "OK") | "- Critério: \(.metric)\n  Valor atual: \(.actual // \"n/a\")\n  Status: \(.status)\n"'
+            echo -e "\n🔗 Ver detalhes: $SONAR_HOST_URL/dashboard?id=$PROJECT_KEY"
+            exit 1
+          else
+            echo -e "\n✅ Quality Gate aprovado."
+          fi
 
       - name: Compilar TypeScript
         run: npm run build
