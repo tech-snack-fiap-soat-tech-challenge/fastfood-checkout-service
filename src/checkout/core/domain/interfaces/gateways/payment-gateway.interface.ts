@@ -13,7 +13,7 @@ export type PaymentOutput = {
 
 export interface IPaymentGateway {
   create(payment: PaymentInput): Promise<PaymentOutput>;
-  getByArgs(id: number): Promise<Omit<PaymentOutput, 'qrCode'>>;
+  getByArgs(id: string): Promise<Omit<PaymentOutput, 'qrCode'>>;
 }
 
 export const IPaymentGateway = Symbol('IPaymentGateway');

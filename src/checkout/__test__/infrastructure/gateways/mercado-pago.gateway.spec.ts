@@ -115,7 +115,7 @@ describe('MercadoPagoGateway', () => {
           expect(result).toEqual({
             id: '12345',
             status: 'approved',
-            orderId: '25',
+            orderId: paymentId,
           });
         });
       });

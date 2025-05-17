@@ -83,10 +83,11 @@ describe('CheckoutController', () => {
     describe('when action is not "payment.updated"', () => {
       it('should return undefined and not call CommandBus.execute', async () => {
         // Arrange
+        const paymentId = 'pay_123';
         const input: UpdateCheckoutStatusRequest = {
           action: 'some.other.action',
-          data: { id: 123 },
-          id: 123,
+          data: { id: paymentId },
+          id: paymentId,
         };
         const spy = jest.spyOn(commandBus, 'execute');
 
@@ -102,10 +103,11 @@ describe('CheckoutController', () => {
     describe('when action is "payment.updated"', () => {
       it('should call CommandBus.execute with the correct command and return the result', async () => {
         // Arrange
+        const paymentId = 'pay_123';
         const input: UpdateCheckoutStatusRequest = {
           action: 'payment.updated',
-          data: { id: 123 },
-          id: 123,
+          data: { id: paymentId },
+          id: paymentId,
         };
 
         const expectedOutput: UpdateCheckoutStatusOutput = {
@@ -127,7 +129,7 @@ describe('CheckoutController', () => {
 
         // Assert
         expect(commandBus.execute).toHaveBeenCalledWith(
-          new UpdateCheckoutStatusCommand(123),
+          new UpdateCheckoutStatusCommand(paymentId),
         );
         expect(result).toEqual(expectedOutput);
       });

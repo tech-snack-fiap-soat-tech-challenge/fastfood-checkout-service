@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject, NotFoundException } from '@nestjs/common';
+import { Inject, Logger, NotFoundException } from '@nestjs/common';
 import { ICheckoutRepository } from '@app/checkout/core/domain/interfaces/repositories/checkout.repository.interface';
 import { UpdateCheckoutStatusCommand } from './update-checkout-status.command';
 import { UpdateCheckoutStatusOutput } from './update-checkout-status.output';
@@ -16,6 +16,7 @@ export class UpdateCheckoutStatusHandler
     ICommandHandler<UpdateCheckoutStatusCommand, UpdateCheckoutStatusOutput>
 {
   private readonly queueUrl: string;
+  private readonly logger = new Logger(UpdateCheckoutStatusHandler.name);
 
   constructor(
     @Inject(ICheckoutRepository)
@@ -69,6 +70,9 @@ export class UpdateCheckoutStatusHandler
       checkout.status as Status,
     );
 
+    this.logger.log(
+      `sending checkout event to SQS: ${JSON.stringify(checkoutEvent)}, QueueUrl: ${this.queueUrl}`,
+    );
     await this.sqsService.sendMessage(
       this.queueUrl,
       `checkout-${checkoutEvent.orderId}`,

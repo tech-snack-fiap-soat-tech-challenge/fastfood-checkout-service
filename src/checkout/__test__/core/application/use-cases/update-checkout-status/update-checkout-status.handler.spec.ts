@@ -66,8 +66,8 @@ describe('UpdateCheckoutStatusHandler', () => {
     describe('When execute is called', () => {
       it('Should update checkout status to paid, publish an event to SQS, and return the updated checkout', async () => {
         // Arrange
-        const paymentId = '123';
-        const command = new UpdateCheckoutStatusCommand(123);
+        const paymentId = 'pay_123';
+        const command = new UpdateCheckoutStatusCommand(paymentId);
 
         const mockPayment = {
           id: paymentId,
@@ -107,7 +107,7 @@ describe('UpdateCheckoutStatusHandler', () => {
         const result = await handler.execute(command);
 
         // Assert
-        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(123);
+        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(paymentId);
         expect(checkoutRepository.getByOrderId).toHaveBeenCalledWith(
           mockPayment.orderId,
         );
@@ -135,8 +135,8 @@ describe('UpdateCheckoutStatusHandler', () => {
     describe('When execute is called', () => {
       it('Should update checkout status to refused, publish an event to SQS, and return the updated checkout', async () => {
         // Arrange
-        const paymentId = '456';
-        const command = new UpdateCheckoutStatusCommand(456);
+        const paymentId = 'pay_456';
+        const command = new UpdateCheckoutStatusCommand(paymentId);
 
         const mockPayment = {
           id: paymentId,
@@ -176,7 +176,7 @@ describe('UpdateCheckoutStatusHandler', () => {
         const result = await handler.execute(command);
 
         // Assert
-        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(456);
+        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(paymentId);
         expect(checkoutRepository.getByOrderId).toHaveBeenCalledWith(
           mockPayment.orderId,
         );
@@ -204,7 +204,7 @@ describe('UpdateCheckoutStatusHandler', () => {
     describe('When execute is called', () => {
       it('Should throw NotFoundException', async () => {
         // Arrange
-        const paymentId = 999;
+        const paymentId = 'pay_999';
         const command = new UpdateCheckoutStatusCommand(paymentId);
 
         paymentGateway.getByArgs.mockResolvedValueOnce(null);
@@ -224,8 +224,8 @@ describe('UpdateCheckoutStatusHandler', () => {
     describe('When execute is called', () => {
       it('Should throw NotFoundException', async () => {
         // Arrange
-        const paymentId = '789';
-        const command = new UpdateCheckoutStatusCommand(789);
+        const paymentId = 'pay_789';
+        const command = new UpdateCheckoutStatusCommand(paymentId);
 
         const mockPayment = {
           id: paymentId,
@@ -240,7 +240,7 @@ describe('UpdateCheckoutStatusHandler', () => {
         await expect(handler.execute(command)).rejects.toThrow(
           new NotFoundException('Checkout not found'),
         );
-        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(789);
+        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(paymentId);
         expect(checkoutRepository.getByOrderId).toHaveBeenCalledWith(
           mockPayment.orderId,
         );
@@ -253,8 +253,8 @@ describe('UpdateCheckoutStatusHandler', () => {
     describe('When execute is called', () => {
       it('Should throw UpdateFailedException', async () => {
         // Arrange
-        const paymentId = '123';
-        const command = new UpdateCheckoutStatusCommand(123);
+        const paymentId = 'pay_123';
+        const command = new UpdateCheckoutStatusCommand(paymentId);
 
         const mockPayment = {
           id: paymentId,
@@ -283,7 +283,7 @@ describe('UpdateCheckoutStatusHandler', () => {
         await expect(handler.execute(command)).rejects.toThrow(
           new UpdateFailedException('Checkout', mockCheckout.id),
         );
-        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(123);
+        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(paymentId);
         expect(checkoutRepository.getByOrderId).toHaveBeenCalledWith(
           mockPayment.orderId,
         );
