@@ -37,10 +37,10 @@ jobs:
         run: |
           SCANNER_META_PATH="$(pwd)/.scanner-meta.properties"
           npx sonar-scanner \
-            -Dsonar.exclusions=**/*.spec.ts,**/*.test.ts \
             -Dsonar.projectKey=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service \
             -Dsonar.organization=tech-snack-fiap-soat-tech-challenge \
             -Dsonar.sources=src \
+            -Dsonar.exclusions=**/__test__/**,**/*.spec.ts,**/*.test.ts \
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts \
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.host.url=$SONAR_HOST_URL \
