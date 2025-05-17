@@ -28,9 +28,9 @@ export class CheckoutOutput {
 
   @ApiProperty({
     description: 'Identifier of the related order',
-    example: 101,
+    example: 'order_12345',
   })
-  orderId: number;
+  orderId: string;
 
   @ApiProperty({
     description: 'Date when the checkout was created',

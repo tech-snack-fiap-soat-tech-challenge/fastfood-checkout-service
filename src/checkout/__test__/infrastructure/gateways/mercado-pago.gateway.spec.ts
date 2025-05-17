@@ -15,7 +15,7 @@ describe('MercadoPagoGateway', () => {
     status: 'pending',
     qrCode:
       '00020126600014br.gov.bcb.pix0117test@testuser.com0217dados adicionais520400005303986540510.005802BR5913Maria Silva6008Brasilia62070503***6304E2CA',
-    orderId: 123,
+    orderId: '123',
   };
 
   // Helper function to flush promises
@@ -56,7 +56,7 @@ describe('MercadoPagoGateway', () => {
         it('Should return a successful payment output with QR code', async () => {
           // Arrange
           const paymentInput: PaymentInput = {
-            orderId: 123,
+            orderId: '123',
             customerId: 456,
             amount: 10.99,
           };
@@ -79,7 +79,7 @@ describe('MercadoPagoGateway', () => {
         it('Should throw the error', async () => {
           // Arrange
           const paymentInput: PaymentInput = {
-            orderId: 123,
+            orderId: '123',
             customerId: 456,
             amount: 10.99,
           };
@@ -115,7 +115,7 @@ describe('MercadoPagoGateway', () => {
           expect(result).toEqual({
             id: '12345',
             status: 'approved',
-            orderId: 25,
+            orderId: '25',
           });
         });
       });

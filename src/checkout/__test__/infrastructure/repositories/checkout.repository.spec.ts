@@ -36,14 +36,14 @@ describe('CheckoutRepository', () => {
           const mockCheckouts: CheckoutEntity[] = [
             {
               id: 1,
-              orderId: 101,
+              orderId: 'order_101',
               paymentId: 'pay_123',
               paymentCode: 'PC123',
               status: 'paid',
             } as CheckoutEntity,
             {
               id: 2,
-              orderId: 102,
+              orderId: 'order_102',
               paymentId: 'pay_456',
               paymentCode: 'PC456',
               status: 'pending',
@@ -71,7 +71,7 @@ describe('CheckoutRepository', () => {
           const mockId = 1;
           const mockCheckout = {
             id: mockId,
-            orderId: 101,
+            orderId: 'order_101',
             paymentId: 'pay_123',
             paymentCode: 'PC123',
             status: 'paid',
@@ -120,7 +120,7 @@ describe('CheckoutRepository', () => {
         it('Should save and return the new checkout entity', async () => {
           // Arrange
           const mockCheckout = {
-            orderId: 101,
+            orderId: 'order_101',
             paymentId: 'pay_123',
             paymentCode: 'PC123',
             status: 'pending',
@@ -159,7 +159,7 @@ describe('CheckoutRepository', () => {
 
           const updatedCheckout = {
             id: mockId,
-            orderId: 101,
+            orderId: 'order_101',
             paymentId: 'pay_123',
             paymentCode: 'PC123',
             status: 'paid',
@@ -195,7 +195,7 @@ describe('CheckoutRepository', () => {
       describe('When getByOrderId is called', () => {
         it('Should return the checkout entity', async () => {
           // Arrange
-          const mockOrderId = 101;
+          const mockOrderId = 'order_101';
           const mockCheckout = {
             id: 1,
             orderId: mockOrderId,
@@ -226,7 +226,7 @@ describe('CheckoutRepository', () => {
       describe('When getByOrderId is called', () => {
         it('Should return null', async () => {
           // Arrange
-          const mockOrderId = 999;
+          const mockOrderId = 'order_999';
           typeOrmRepository.findOne.mockResolvedValueOnce(null);
 
           // Act

@@ -49,7 +49,7 @@ describe('CheckoutController', () => {
           paymentId: 'pay_123',
           paymentCode: 'PC123',
           status: 'pending',
-          orderId: 101,
+          orderId: 'order_123',
           createdAt: new Date('2023-01-01'),
           updatedAt: new Date('2023-01-01'),
         },
@@ -58,7 +58,7 @@ describe('CheckoutController', () => {
           paymentId: 'pay_456',
           paymentCode: 'PC456',
           status: 'paid',
-          orderId: 102,
+          orderId: 'order_124',
           createdAt: new Date('2023-01-02'),
           updatedAt: new Date('2023-01-02'),
         },
@@ -114,7 +114,7 @@ describe('CheckoutController', () => {
             paymentId: 'pay_123',
             paymentCode: 'PC123',
             status: 'paid',
-            orderId: 101,
+            orderId: 'order_123',
             createdAt: new Date('2023-01-01'),
             updatedAt: new Date('2023-01-02'),
           },
@@ -137,14 +137,14 @@ describe('CheckoutController', () => {
   describe('getCheckoutByOrder', () => {
     it('should return the checkout for the specified order ID', async () => {
       // Arrange
-      const orderId = 101;
+      const orderId = 'order_123';
 
       const mockCheckout: CheckoutOutput = {
         id: 1,
         paymentId: 'pay_123',
         paymentCode: 'PC123',
         status: 'paid',
-        orderId: 101,
+        orderId: orderId,
         createdAt: new Date('2023-01-01'),
         updatedAt: new Date('2023-01-02'),
       };

@@ -68,7 +68,7 @@ export class CheckoutController {
   })
   @Get(':orderId')
   async getCheckoutByOrder(
-    @Param('orderId') orderId: number,
+    @Param('orderId') orderId: string,
   ): Promise<CheckoutOutput> {
     const input = new GetCheckoutByOrderIdQuery(orderId);
 

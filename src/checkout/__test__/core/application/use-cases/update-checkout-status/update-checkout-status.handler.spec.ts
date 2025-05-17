@@ -71,7 +71,7 @@ describe('UpdateCheckoutStatusHandler', () => {
 
         const mockPayment = {
           id: paymentId,
-          orderId: 101,
+          orderId: 'order_123',
           status: 'approved',
         };
 
@@ -80,7 +80,7 @@ describe('UpdateCheckoutStatusHandler', () => {
           paymentId: paymentId,
           paymentCode: 'PC123',
           status: Status.WaitingPayment,
-          orderId: 101,
+          orderId: 'order_123',
           createdAt: new Date('2023-01-01'),
           updatedAt: new Date('2023-01-01'),
           changeData: jest.fn(),
@@ -140,7 +140,7 @@ describe('UpdateCheckoutStatusHandler', () => {
 
         const mockPayment = {
           id: paymentId,
-          orderId: 102,
+          orderId: 'order_102',
           status: 'rejected',
         };
 
@@ -149,7 +149,7 @@ describe('UpdateCheckoutStatusHandler', () => {
           paymentId: paymentId,
           paymentCode: 'PC456',
           status: Status.WaitingPayment,
-          orderId: 102,
+          orderId: 'order_102',
           createdAt: new Date('2023-01-01'),
           updatedAt: new Date('2023-01-01'),
           changeData: jest.fn(),
@@ -229,7 +229,7 @@ describe('UpdateCheckoutStatusHandler', () => {
 
         const mockPayment = {
           id: paymentId,
-          orderId: 103,
+          orderId: 'order_103',
           status: 'approved',
         };
 
@@ -258,7 +258,7 @@ describe('UpdateCheckoutStatusHandler', () => {
 
         const mockPayment = {
           id: paymentId,
-          orderId: 101,
+          orderId: 'order_101',
           status: 'approved',
         };
 
@@ -267,7 +267,7 @@ describe('UpdateCheckoutStatusHandler', () => {
           paymentId: paymentId,
           paymentCode: 'PC123',
           status: Status.WaitingPayment,
-          orderId: 101,
+          orderId: 'order_101',
           createdAt: new Date('2023-01-01'),
           updatedAt: new Date('2023-01-01'),
           changeData: jest.fn(),

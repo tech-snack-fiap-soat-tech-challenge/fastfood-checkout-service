@@ -38,11 +38,11 @@ describe('OrderCreatedHandler', () => {
     describe('When handle is called', () => {
       it('Should create a payment and a checkout', async () => {
         // Arrange
-        const event = new OrderCreatedEvent(123, 789, 50.0);
+        const event = new OrderCreatedEvent('123', 789, 50.0);
 
         const paymentResponse = {
           id: '456',
-          orderId: 123,
+          orderId: '123',
           qrCode: 'QRCODE123',
           status: 'pending',
         };
@@ -83,7 +83,7 @@ describe('OrderCreatedHandler', () => {
     describe('When handle is called', () => {
       it('Should propagate the error and not create a checkout', async () => {
         // Arrange
-        const event = new OrderCreatedEvent(123, 789, 50.0);
+        const event = new OrderCreatedEvent('123', 789, 50.0);
 
         const error = new Error('Payment gateway error');
         paymentGateway.create.mockRejectedValueOnce(error);
@@ -104,11 +104,11 @@ describe('OrderCreatedHandler', () => {
     describe('When handle is called', () => {
       it('Should propagate the error after creating a payment', async () => {
         // Arrange
-        const event = new OrderCreatedEvent(123, 789, 50.0);
+        const event = new OrderCreatedEvent('123', 789, 50.0);
 
         const paymentResponse = {
           id: '456',
-          orderId: 123,
+          orderId: '123',
           qrCode: 'QRCODE123',
           status: 'pending',
         };

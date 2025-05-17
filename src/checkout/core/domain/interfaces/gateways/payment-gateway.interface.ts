@@ -1,12 +1,12 @@
 export type PaymentInput = {
-  orderId: number;
+  orderId: string;
   customerId: number;
   amount: number;
 };
 
 export type PaymentOutput = {
   id: string;
-  orderId: number;
+  orderId: string;
   status: string;
   qrCode: string;
 };

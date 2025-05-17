@@ -33,7 +33,7 @@ describe('GetCheckoutByOrderIdHandler', () => {
     describe('When execute is called', () => {
       it('Should return checkout data wrapped in GetCheckoutByOrderIdOutput', async () => {
         // Arrange
-        const orderId = 101;
+        const orderId = 'order_123';
         const query = new GetCheckoutByOrderIdQuery(orderId);
 
         const mockCheckout: Partial<CheckoutEntity> = {
@@ -65,7 +65,7 @@ describe('GetCheckoutByOrderIdHandler', () => {
     describe('When execute is called', () => {
       it('Should throw NotFoundException', async () => {
         // Arrange
-        const orderId = 999;
+        const orderId = 'order_999';
         const query = new GetCheckoutByOrderIdQuery(orderId);
 
         checkoutRepository.getByOrderId.mockResolvedValueOnce(null);
@@ -83,7 +83,7 @@ describe('GetCheckoutByOrderIdHandler', () => {
     describe('When execute is called', () => {
       it('Should propagate the error', async () => {
         // Arrange
-        const orderId = 101;
+        const orderId = 'order_123';
         const query = new GetCheckoutByOrderIdQuery(orderId);
         const error = new Error('Database error');
 
