@@ -1,3 +1,3 @@
 export class GetCheckoutByOrderIdQuery {
-  constructor(public orderId: number) {}
+  constructor(public orderId: string) {}
 }

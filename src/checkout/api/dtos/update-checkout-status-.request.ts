@@ -4,12 +4,12 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateCheckoutStatusRequest {
   @ApiProperty({
     name: 'id',
-    example: 12345,
+    example: 'pay_12345',
     description: 'Payment id',
     required: true,
   })
-  @IsNumber()
-  id: number;
+  @IsString()
+  id: string;
 
   @ApiProperty({
     name: 'action',
@@ -28,6 +28,6 @@ export class UpdateCheckoutStatusRequest {
   })
   @IsObject()
   data: {
-    id: number;
+    id: string;
   };
 }

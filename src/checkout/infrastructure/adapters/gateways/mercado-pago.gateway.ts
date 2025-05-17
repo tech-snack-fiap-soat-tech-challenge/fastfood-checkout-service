@@ -11,7 +11,7 @@ type MercadoPagoCreatePaymentResponse = {
   id: number;
   status: 'pending' | 'approved' | 'rejected';
   metadata: {
-    order_id: number;
+    order_id: string;
   };
   point_of_interaction: {
     transaction_data: {
@@ -88,7 +88,7 @@ export class MercadoPagoGateway implements IPaymentGateway {
     }
   }
 
-  async getByArgs(id: number | string): Promise<Omit<PaymentOutput, 'qrCode'>> {
+  async getByArgs(id: string): Promise<Omit<PaymentOutput, 'qrCode'>> {
     try {
       /*const gatewayResponse = await this.paymentGateway.get({
         id,
@@ -104,7 +104,7 @@ export class MercadoPagoGateway implements IPaymentGateway {
             resolve({
               id: 12345,
               status: 'approved' as 'pending' | 'approved' | 'rejected',
-              metadata: { order_id: 25 },
+              metadata: { order_id: id },
             });
           }, 300);
         },

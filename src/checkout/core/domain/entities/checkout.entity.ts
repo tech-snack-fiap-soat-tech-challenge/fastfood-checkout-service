@@ -14,7 +14,7 @@ export class CheckoutEntity extends BaseEntity {
   status: string;
 
   @Column({ name: 'order_id', type: 'integer', nullable: true })
-  orderId: number;
+  orderId: string;
 
   static createInstance(
     data: Pick<CheckoutEntity, 'paymentId' | 'paymentCode' | 'orderId'>,

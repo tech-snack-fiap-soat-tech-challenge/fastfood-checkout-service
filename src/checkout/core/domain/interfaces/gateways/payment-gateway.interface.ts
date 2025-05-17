@@ -1,19 +1,19 @@
 export type PaymentInput = {
-  orderId: number;
+  orderId: string;
   customerId: number;
   amount: number;
 };
 
 export type PaymentOutput = {
   id: string;
-  orderId: number;
+  orderId: string;
   status: string;
   qrCode: string;
 };
 
 export interface IPaymentGateway {
   create(payment: PaymentInput): Promise<PaymentOutput>;
-  getByArgs(id: number): Promise<Omit<PaymentOutput, 'qrCode'>>;
+  getByArgs(id: string): Promise<Omit<PaymentOutput, 'qrCode'>>;
 }
 
 export const IPaymentGateway = Symbol('IPaymentGateway');

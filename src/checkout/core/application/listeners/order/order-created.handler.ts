@@ -1,4 +1,3 @@
-import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 
 import { OrderCreatedEvent } from '@common/domain/events/order-created.event';
@@ -6,8 +5,7 @@ import { IPaymentGateway } from '@checkout/core/domain/interfaces/gateways/payme
 import { ICheckoutRepository } from '@checkout/core/domain/interfaces/repositories/checkout.repository.interface';
 import { CheckoutEntity } from '@checkout/core/domain/entities/checkout.entity';
 
-@EventsHandler(OrderCreatedEvent)
-export class OrderCreatedHandler implements IEventHandler<OrderCreatedEvent> {
+export class OrderCreatedHandler {
   constructor(
     @Inject(ICheckoutRepository)
     private readonly checkoutRepository: ICheckoutRepository,

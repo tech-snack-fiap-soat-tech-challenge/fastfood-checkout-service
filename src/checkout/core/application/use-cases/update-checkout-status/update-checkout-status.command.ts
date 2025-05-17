@@ -1,3 +1,3 @@
 export class UpdateCheckoutStatusCommand {
-  constructor(public paymentId: number) {}
+  constructor(public paymentId: string) {}
 }

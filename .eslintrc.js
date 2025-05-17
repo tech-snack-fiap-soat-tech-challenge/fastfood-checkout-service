@@ -43,4 +43,13 @@ module.exports = {
       },
     },
   },
+  overrides: [
+    {
+      files: ['**/*.spec.ts', '**/*.test.ts'],
+      plugins: ['jest'],
+      rules: {
+        '@typescript-eslint/unbound-method': 'off',
+      },
+    },
+  ],
 };
