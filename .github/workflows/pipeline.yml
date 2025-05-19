@@ -152,7 +152,7 @@ jobs:
 
       - name: Fazer deploy com Helm
         run: |
-          helm upgrade --install fiap-fastfood ./deployment/fiap-fast-food \
+          helm upgrade --install checkout-service ./deployment \
             --namespace default \
             --set image.repository=${{ secrets.AWS_ECR_REPOSITORY }} \
             --set image.tag=latest

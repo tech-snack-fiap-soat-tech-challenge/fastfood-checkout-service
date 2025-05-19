@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrderCreatedHandler } from '@checkout/core/application/listeners/order/order-created.handler';
-import { IPaymentGateway } from '@checkout/core/domain/interfaces/gateways/payment-gateway.interface';
+import {
+  IPaymentGateway,
+  PaymentOutput,
+} from '@checkout/core/domain/interfaces/gateways/payment-gateway.interface';
 import { ICheckoutRepository } from '@checkout/core/domain/interfaces/repositories/checkout.repository.interface';
 import { OrderCreatedEvent } from '@common/domain/events/order-created.event';
 import { CheckoutEntity } from '@checkout/core/domain/entities/checkout.entity';
@@ -9,6 +12,13 @@ describe('OrderCreatedHandler', () => {
   let handler: OrderCreatedHandler;
   let checkoutRepository: jest.Mocked<ICheckoutRepository>;
   let paymentGateway: jest.Mocked<IPaymentGateway>;
+
+  // Test data constants
+  const testOrderId = '123';
+  const testCustomerId = 789;
+  const testAmount = 50.0;
+  const testPaymentId = '456';
+  const testQrCode = 'QRCODE123';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,30 +44,42 @@ describe('OrderCreatedHandler', () => {
     paymentGateway = module.get(IPaymentGateway);
   });
 
+  // Helper functions to reduce duplication
+  const createOrderEvent = () => {
+    return new OrderCreatedEvent(testOrderId, testCustomerId, testAmount);
+  };
+
+  const createPaymentResponse = (): PaymentOutput => {
+    return {
+      id: testPaymentId,
+      orderId: testOrderId,
+      qrCode: testQrCode,
+      status: 'pending',
+    };
+  };
+
+  const createCheckoutEntity = (paymentResponse: PaymentOutput) => {
+    const checkout = {
+      id: 1,
+      orderId: testOrderId,
+      paymentId: paymentResponse.id.toString(),
+      paymentCode: paymentResponse.qrCode,
+    };
+
+    jest
+      .spyOn(CheckoutEntity, 'createInstance')
+      .mockReturnValueOnce(checkout as CheckoutEntity);
+
+    return checkout;
+  };
+
   describe('Given a valid OrderCreatedEvent', () => {
     describe('When handle is called', () => {
       it('Should create a payment and a checkout', async () => {
         // Arrange
-        const event = new OrderCreatedEvent('123', 789, 50.0);
-
-        const paymentResponse = {
-          id: '456',
-          orderId: '123',
-          qrCode: 'QRCODE123',
-          status: 'pending',
-        };
-
-        const createdCheckout = {
-          id: 1,
-          orderId: event.orderId,
-          paymentId: paymentResponse.id.toString(),
-          paymentCode: paymentResponse.qrCode,
-        };
-
-        // Mock the static createInstance method
-        jest
-          .spyOn(CheckoutEntity, 'createInstance')
-          .mockReturnValueOnce(createdCheckout as CheckoutEntity);
+        const event = createOrderEvent();
+        const paymentResponse = createPaymentResponse();
+        const createdCheckout = createCheckoutEntity(paymentResponse);
 
         paymentGateway.create.mockResolvedValueOnce(paymentResponse);
         checkoutRepository.create.mockResolvedValueOnce(
@@ -83,12 +105,10 @@ describe('OrderCreatedHandler', () => {
     describe('When handle is called', () => {
       it('Should propagate the error and not create a checkout', async () => {
         // Arrange
-        const event = new OrderCreatedEvent('123', 789, 50.0);
-
+        const event = createOrderEvent();
         const error = new Error('Payment gateway error');
-        paymentGateway.create.mockRejectedValueOnce(error);
 
-        // Don't need to spy on CheckoutEntity.createInstance as it shouldn't be called
+        paymentGateway.create.mockRejectedValueOnce(error);
 
         // Act & Assert
         await expect(handler.handle(event)).rejects.toThrow(
@@ -104,25 +124,9 @@ describe('OrderCreatedHandler', () => {
     describe('When handle is called', () => {
       it('Should propagate the error after creating a payment', async () => {
         // Arrange
-        const event = new OrderCreatedEvent('123', 789, 50.0);
-
-        const paymentResponse = {
-          id: '456',
-          orderId: '123',
-          qrCode: 'QRCODE123',
-          status: 'pending',
-        };
-
-        const createdCheckout = {
-          id: 1,
-          orderId: event.orderId,
-          paymentId: paymentResponse.id.toString(),
-          paymentCode: paymentResponse.qrCode,
-        };
-
-        jest
-          .spyOn(CheckoutEntity, 'createInstance')
-          .mockReturnValueOnce(createdCheckout as CheckoutEntity);
+        const event = createOrderEvent();
+        const paymentResponse = createPaymentResponse();
+        const createdCheckout = createCheckoutEntity(paymentResponse);
 
         paymentGateway.create.mockResolvedValueOnce(paymentResponse);
         checkoutRepository.create.mockRejectedValueOnce(

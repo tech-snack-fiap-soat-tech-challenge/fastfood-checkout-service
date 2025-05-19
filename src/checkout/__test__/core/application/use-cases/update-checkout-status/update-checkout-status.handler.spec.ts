@@ -12,6 +12,7 @@ import { Status } from '@app/checkout/core/application/enums/status.enum';
 import { UpdateFailedException } from '@app/common/exceptions/entity-update-failed.exception';
 import { SendMessageCommandOutput } from '@aws-sdk/client-sqs';
 import { CheckoutOutput } from '@app/checkout/core/application/dtos/checkout.output';
+import { UpdateCheckoutStatusOutput } from '@app/checkout/core/application/use-cases/update-checkout-status/update-checkout-status.output';
 
 describe('UpdateCheckoutStatusHandler', () => {
   let handler: UpdateCheckoutStatusHandler;
@@ -62,70 +63,115 @@ describe('UpdateCheckoutStatusHandler', () => {
     sqsService = module.get(SqsService);
   });
 
+  // Helper functions
+  const setupSuccessfulScenario = (
+    paymentId: string,
+    orderId: string,
+    paymentStatus: string,
+    checkoutId: number,
+    paymentCode: string,
+    newStatus: Status,
+  ) => {
+    const command = new UpdateCheckoutStatusCommand(paymentId);
+
+    const mockPayment = {
+      id: paymentId,
+      orderId,
+      status: paymentStatus,
+    };
+
+    const mockCheckout: Partial<CheckoutEntity> = {
+      id: checkoutId,
+      paymentId,
+      paymentCode,
+      status: Status.WaitingPayment,
+      orderId,
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2023-01-01'),
+      changeData: jest.fn(),
+    };
+
+    const updatedCheckout = {
+      ...mockCheckout,
+      status: newStatus,
+      updatedAt: new Date('2023-01-02'),
+    };
+
+    // Setup mocks
+    paymentGateway.getByArgs.mockResolvedValueOnce(mockPayment);
+    checkoutRepository.getByOrderId.mockResolvedValueOnce(
+      mockCheckout as CheckoutEntity,
+    );
+    checkoutRepository.update.mockResolvedValueOnce(
+      updatedCheckout as CheckoutEntity,
+    );
+    sqsService.sendMessage.mockResolvedValueOnce(
+      {} as SendMessageCommandOutput,
+    );
+
+    return {
+      command,
+      mockPayment,
+      mockCheckout,
+      updatedCheckout,
+    };
+  };
+
+  const assertSuccessfulScenario = (
+    result: UpdateCheckoutStatusOutput,
+    paymentId: string,
+    orderId: string,
+    checkoutId: number,
+    checkout: CheckoutEntity,
+    updatedCheckout: CheckoutEntity,
+    newStatus: Status,
+  ) => {
+    expect(paymentGateway.getByArgs).toHaveBeenCalledWith(paymentId);
+    expect(checkoutRepository.getByOrderId).toHaveBeenCalledWith(orderId);
+    expect(checkout.changeData).toHaveBeenCalledWith({
+      ...checkout,
+      status: newStatus,
+    });
+    expect(checkoutRepository.update).toHaveBeenCalledWith(
+      checkoutId,
+      checkout,
+    );
+    expect(sqsService.sendMessage).toHaveBeenCalledWith(
+      mockQueueUrl,
+      `checkout-${orderId}`,
+      expect.stringContaining(orderId),
+    );
+    expect(result.checkout).toEqual(new CheckoutOutput(updatedCheckout));
+  };
+
   describe('Given a valid payment ID with approved status', () => {
     describe('When execute is called', () => {
       it('Should update checkout status to paid, publish an event to SQS, and return the updated checkout', async () => {
         // Arrange
         const paymentId = 'pay_123';
-        const command = new UpdateCheckoutStatusCommand(paymentId);
-
-        const mockPayment = {
-          id: paymentId,
-          orderId: 'order_123',
-          status: 'approved',
-        };
-
-        const mockCheckout: Partial<CheckoutEntity> = {
-          id: 1,
-          paymentId: paymentId,
-          paymentCode: 'PC123',
-          status: Status.WaitingPayment,
-          orderId: 'order_123',
-          createdAt: new Date('2023-01-01'),
-          updatedAt: new Date('2023-01-01'),
-          changeData: jest.fn(),
-        };
-
-        const updatedCheckout = {
-          ...mockCheckout,
-          status: Status.Paid,
-          updatedAt: new Date('2023-01-02'),
-        };
-
-        paymentGateway.getByArgs.mockResolvedValueOnce(mockPayment);
-        checkoutRepository.getByOrderId.mockResolvedValueOnce(
-          mockCheckout as CheckoutEntity,
-        );
-        checkoutRepository.update.mockResolvedValueOnce(
-          updatedCheckout as CheckoutEntity,
-        );
-        sqsService.sendMessage.mockResolvedValueOnce(
-          {} as SendMessageCommandOutput,
-        );
+        const orderId = 'order_123';
+        const { command, mockCheckout, updatedCheckout } =
+          setupSuccessfulScenario(
+            paymentId,
+            orderId,
+            'approved',
+            1,
+            'PC123',
+            Status.Paid,
+          );
 
         // Act
         const result = await handler.execute(command);
 
         // Assert
-        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(paymentId);
-        expect(checkoutRepository.getByOrderId).toHaveBeenCalledWith(
-          mockPayment.orderId,
-        );
-        expect(mockCheckout.changeData).toHaveBeenCalledWith({
-          ...mockCheckout,
-          status: Status.Paid,
-        });
-        expect(checkoutRepository.update).toHaveBeenCalledWith(
-          mockCheckout.id,
-          mockCheckout,
-        );
-        expect(sqsService.sendMessage).toHaveBeenCalledWith(
-          mockQueueUrl,
-          `checkout-${mockCheckout.orderId}`,
-          expect.stringContaining(mockCheckout.orderId.toString()),
-        );
-        expect(result.checkout).toEqual(
-          new CheckoutOutput(updatedCheckout as CheckoutEntity),
+        assertSuccessfulScenario(
+          result,
+          paymentId,
+          orderId,
+          updatedCheckout.id,
+          mockCheckout as CheckoutEntity,
+          updatedCheckout as CheckoutEntity,
+          Status.Paid,
         );
       });
     });
@@ -136,65 +182,29 @@ describe('UpdateCheckoutStatusHandler', () => {
       it('Should update checkout status to refused, publish an event to SQS, and return the updated checkout', async () => {
         // Arrange
         const paymentId = 'pay_456';
-        const command = new UpdateCheckoutStatusCommand(paymentId);
-
-        const mockPayment = {
-          id: paymentId,
-          orderId: 'order_102',
-          status: 'rejected',
-        };
-
-        const mockCheckout: Partial<CheckoutEntity> = {
-          id: 2,
-          paymentId: paymentId,
-          paymentCode: 'PC456',
-          status: Status.WaitingPayment,
-          orderId: 'order_102',
-          createdAt: new Date('2023-01-01'),
-          updatedAt: new Date('2023-01-01'),
-          changeData: jest.fn(),
-        };
-
-        const updatedCheckout = {
-          ...mockCheckout,
-          status: Status.Refused,
-          updatedAt: new Date('2023-01-02'),
-        };
-
-        paymentGateway.getByArgs.mockResolvedValueOnce(mockPayment);
-        checkoutRepository.getByOrderId.mockResolvedValueOnce(
-          mockCheckout as CheckoutEntity,
-        );
-        checkoutRepository.update.mockResolvedValueOnce(
-          updatedCheckout as CheckoutEntity,
-        );
-        sqsService.sendMessage.mockResolvedValueOnce(
-          {} as SendMessageCommandOutput,
-        );
+        const orderId = 'order_102';
+        const { command, mockCheckout, updatedCheckout } =
+          setupSuccessfulScenario(
+            paymentId,
+            orderId,
+            'rejected',
+            2,
+            'PC456',
+            Status.Refused,
+          );
 
         // Act
         const result = await handler.execute(command);
 
         // Assert
-        expect(paymentGateway.getByArgs).toHaveBeenCalledWith(paymentId);
-        expect(checkoutRepository.getByOrderId).toHaveBeenCalledWith(
-          mockPayment.orderId,
-        );
-        expect(mockCheckout.changeData).toHaveBeenCalledWith({
-          ...mockCheckout,
-          status: Status.Refused,
-        });
-        expect(checkoutRepository.update).toHaveBeenCalledWith(
-          mockCheckout.id,
-          mockCheckout,
-        );
-        expect(sqsService.sendMessage).toHaveBeenCalledWith(
-          mockQueueUrl,
-          `checkout-${mockCheckout.orderId}`,
-          expect.stringContaining(mockCheckout.orderId.toString()),
-        );
-        expect(result.checkout).toEqual(
-          new CheckoutOutput(updatedCheckout as CheckoutEntity),
+        assertSuccessfulScenario(
+          result,
+          paymentId,
+          orderId,
+          updatedCheckout.id,
+          mockCheckout as CheckoutEntity,
+          updatedCheckout as CheckoutEntity,
+          Status.Refused,
         );
       });
     });
@@ -254,11 +264,12 @@ describe('UpdateCheckoutStatusHandler', () => {
       it('Should throw UpdateFailedException', async () => {
         // Arrange
         const paymentId = 'pay_123';
+        const orderId = 'order_101';
         const command = new UpdateCheckoutStatusCommand(paymentId);
 
         const mockPayment = {
           id: paymentId,
-          orderId: 'order_101',
+          orderId,
           status: 'approved',
         };
 
@@ -267,7 +278,7 @@ describe('UpdateCheckoutStatusHandler', () => {
           paymentId: paymentId,
           paymentCode: 'PC123',
           status: Status.WaitingPayment,
-          orderId: 'order_101',
+          orderId,
           createdAt: new Date('2023-01-01'),
           updatedAt: new Date('2023-01-01'),
           changeData: jest.fn(),
