@@ -5,7 +5,7 @@ metadata:
   labels:
     name: db-config
 data:
-  DB_HOST: fiap-fastfood.cre926gi33ka.us-east-1.rds.amazonaws.com
+  DB_HOST: checkout-fiap-fastfood-db.c1rxlkrzya27.us-east-1.rds.amazonaws.com
   DB_USERNAME: postgres
-  DB_PASSWORD: fiapfastfood2025-postgres
+  DB_PASSWORD: loucura123
   DB_NAME: postgres

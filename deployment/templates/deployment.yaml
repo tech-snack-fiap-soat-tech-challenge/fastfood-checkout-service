@@ -59,6 +59,10 @@ spec:
               value: {{ .Values.env.LOG_LEVEL | quote }}
             - name: DB_SSL_CERT
               value: {{ .Values.env.DB_SSL_CERT | quote }}
+            - name: AWS_ORDER_CREATED_QUEUE_URL
+              value: {{ .Values.env.AWS_ORDER_CREATED_QUEUE_URL | quote }}
+            - name: AWS_PAYMENT_COMPLETED_QUEUE_URL
+              value: {{ .Values.env.AWS_PAYMENT_COMPLETED_QUEUE_URL | quote }}
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:

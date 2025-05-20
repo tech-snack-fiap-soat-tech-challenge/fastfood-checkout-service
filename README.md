@@ -78,7 +78,7 @@ docker compose up --build
 
 API documentation is auto-generated using **Swagger** and available once the app is running.
 
-👉 Visit: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+👉 Visit: [http://localhost:3000/docs](http://localhost:3000/docs)
 
 ---
 
