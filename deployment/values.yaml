@@ -1,7 +1,7 @@
 
-replicaCount: 2
+replicaCount: 1
 image:
-  repository: 966597785226.dkr.ecr.us-east-1.amazonaws.com/checkout-service
+  repository: 966597785226.dkr.ecr.us-east-1.amazonaws.com/fastfood-checkout-service
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -57,8 +57,8 @@ readinessProbe:
 autoscaling:
   periodSeconds: 30
   enabled: true
-  minReplicas: 2
-  maxReplicas: 4
+  minReplicas: 1
+  maxReplicas: 1
   targetCPUUtilizationPercentage: 60
   # targetMemoryUtilizationPercentage: 60
 
