@@ -15,6 +15,10 @@ The Checkout Service is responsible for:
 
 This microservice follows Clean Architecture principles, with clear separation between domain logic and infrastructure concerns, ensuring maintainable and testable code.
 ---
+## Sonar Analyses
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service&metric=coverage)](https://sonarcloud.io/summary/new_code?id=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service)
 
 ## 🚀 Getting Started with Local Development
 
