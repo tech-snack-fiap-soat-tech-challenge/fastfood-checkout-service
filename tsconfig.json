@@ -12,8 +12,9 @@
     "baseUrl": "./",
     "paths": {
       "@app/*": ["./src/*"],
-      "@checkout/*": ["./src/checkout/*"],
       "@common/*": ["./src/common/*"],
+      "@checkout/*": ["./src/checkout/*"],
+      "@order/*": ["./src/order/*"],
     },
     "incremental": true,
     "skipLibCheck": true,

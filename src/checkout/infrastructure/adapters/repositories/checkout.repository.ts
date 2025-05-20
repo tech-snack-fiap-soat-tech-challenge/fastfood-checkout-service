@@ -18,7 +18,6 @@ export class CheckoutRepository implements ICheckoutRepository {
   async getById(id: number): Promise<CheckoutEntity> {
     return this.checkoutRepository.findOne({
       where: { id },
-      relations: ['order'],
     });
   }
 
@@ -34,10 +33,9 @@ export class CheckoutRepository implements ICheckoutRepository {
     return this.getById(id);
   }
 
-  async getByOrderId(orderId: number): Promise<CheckoutEntity> {
+  async getByOrderId(orderId: string): Promise<CheckoutEntity> {
     return this.checkoutRepository.findOne({
       where: { orderId },
-      relations: ['order'],
     });
   }
 }

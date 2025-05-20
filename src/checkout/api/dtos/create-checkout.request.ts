@@ -23,10 +23,10 @@ export class CreateCheckoutRequest {
 
   @ApiProperty({
     name: 'orderId',
-    example: 1,
+    example: 'order_123abc',
     description: 'The id of the order',
     required: true,
   })
   @IsNumber()
-  orderId: number;
+  orderId: string;
 }

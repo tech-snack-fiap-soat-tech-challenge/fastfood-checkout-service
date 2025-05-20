@@ -40,6 +40,7 @@ jobs:
             -Dsonar.projectKey=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service \
             -Dsonar.organization=tech-snack-fiap-soat-tech-challenge \
             -Dsonar.sources=src \
+            -Dsonar.exclusions=**/__test__/**,**/*.spec.ts,**/*.test.ts \
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts \
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.host.url=$SONAR_HOST_URL \
@@ -151,7 +152,7 @@ jobs:
 
       - name: Fazer deploy com Helm
         run: |
-          helm upgrade --install fiap-fastfood ./deployment/fiap-fast-food \
+          helm upgrade --install checkout-service ./deployment \
             --namespace default \
             --set image.repository=${{ secrets.AWS_ECR_REPOSITORY }} \
             --set image.tag=latest
