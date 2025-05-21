@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: db-config
+  name: checkout-db-config
   labels:
-    name: db-config
+    name: checkout-db-config
 data:
   DB_HOST: checkout-fiap-fastfood-db.c1rxlkrzya27.us-east-1.rds.amazonaws.com
   DB_USERNAME: postgres

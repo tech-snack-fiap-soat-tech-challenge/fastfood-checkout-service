@@ -64,22 +64,22 @@ spec:
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: checkout-db-config
                   key: DB_HOST
             - name: DB_USERNAME
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: checkout-db-config
                   key: DB_USERNAME
             - name: DB_PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: checkout-db-config
                   key: DB_PASSWORD
             - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: checkout-db-config
                   key: DB_NAME
       {{- with .Values.volumes }}
       volumes:
