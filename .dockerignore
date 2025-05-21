@@ -15,7 +15,6 @@ yarn-error.log*
 infra/
 deployment/
 performance/
-db/
 
 # Ignore documentation files
 docs/
