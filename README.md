@@ -3,6 +3,11 @@
 Welcome to the **Checkout microservice** for the FastFood App!  
 Built with **NestJS**, **TypeScript**, **TypeORM**, and **PostgreSQL** — this service handles all payment processing operations for our fast food ordering system.
 
+**Sonar Analyses:**
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service&metric=coverage)](https://sonarcloud.io/summary/new_code?id=tech-snack-fiap-soat-tech-challenge_fastfood-checkout-service)
+
 ## 📋 Service Overview
 
 The Checkout Service is responsible for:
@@ -14,7 +19,6 @@ The Checkout Service is responsible for:
 - Providing a unified payment interface for the FastFood ecosystem
 
 This microservice follows Clean Architecture principles, with clear separation between domain logic and infrastructure concerns, ensuring maintainable and testable code.
----
 
 ## 🚀 Getting Started with Local Development
 
